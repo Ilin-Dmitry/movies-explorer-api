@@ -40,7 +40,7 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -50,7 +50,11 @@ module.exports.login = (req, res) => {
         httpOnly: true,
         sameSite: 'none',
         secure: true,
-      });
-      res.send({ name: user.name, email: user.email, _id: user._id });
-    });
+      }).send({ name: user.name, email: user.email, _id: user._id });
+    })
+    .catch(next);
+};
+
+module.exports.logout = (req, res, next) => {
+  res.clearCookie('token').send({ message: 'Вы успешно вышли из аккаунта' });
 };
