@@ -3,3 +3,5 @@ const { showMe, refreshUser } = require('../controllers/users');
 
 router.get('/users/me', showMe);
 router.patch('/users/me', refreshUser);
+
+module.exports = router;

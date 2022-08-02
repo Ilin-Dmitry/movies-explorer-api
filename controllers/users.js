@@ -1,14 +1,19 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const NotFoundError = require('../errors/NotFoundError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-module.exports.showMe = (req, res) => {
+module.exports.showMe = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      }
       res.send(user);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.refreshUser = (req, res) => {
@@ -48,13 +53,13 @@ module.exports.login = (req, res, next) => {
       res.cookie('token', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
-        sameSite: 'none',
-        secure: true,
+        // sameSite: 'none',
+        // secure: true,
       }).send({ name: user.name, email: user.email, _id: user._id });
     })
     .catch(next);
 };
 
-module.exports.logout = (req, res, next) => {
+module.exports.logout = (req, res) => {
   res.clearCookie('token').send({ message: 'Вы успешно вышли из аккаунта' });
 };
