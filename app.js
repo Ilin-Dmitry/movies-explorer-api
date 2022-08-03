@@ -26,7 +26,7 @@ app.get('/signout', logout);
 app.use(auth);
 
 app.use('/', require('./routes/users'));
-// app.use('/', require('./routes/movies'));
+app.use('/', require('./routes/movies'));
 
 app.use(handleError);
 

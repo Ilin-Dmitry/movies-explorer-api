@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
+const ConflictError = require('../errors/ConflictError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -16,7 +17,7 @@ module.exports.showMe = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.refreshUser = (req, res) => {
+module.exports.refreshUser = (req, res, next) => {
   const { name, email } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, email }, {
     new: true,
@@ -24,7 +25,8 @@ module.exports.refreshUser = (req, res) => {
   })
     .then((user) => {
       res.send(user);
-    });
+    })
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -32,7 +34,7 @@ module.exports.createUser = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (user) {
-        return next(new Error('Пользователь с таким email уже зарегестрирован'));
+        return next(new ConflictError('Пользователь с таким email уже зарегестрирован'));
       }
       return bcrypt.hash(password, 10)
         .then((hash) => {
@@ -42,7 +44,8 @@ module.exports.createUser = (req, res, next) => {
                 .send({ name: userData.name, email: userData.email, _id: userData._id });
             });
         });
-    });
+    })
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {
@@ -60,6 +63,10 @@ module.exports.login = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.logout = (req, res) => {
-  res.clearCookie('token').send({ message: 'Вы успешно вышли из аккаунта' });
+module.exports.logout = (req, res, next) => {
+  try {
+    res.clearCookie('token').send({ message: 'Вы успешно вышли из аккаунта' });
+  } catch (err) {
+    next(err);
+  }
 };
