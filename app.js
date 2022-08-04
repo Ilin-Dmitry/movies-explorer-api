@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const auth = require('./middlewares/auth');
 const { createUser, login, logout } = require('./controllers/users');
 const { handleError } = require('./errors/handleError');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000 } = process.env;
 
@@ -19,6 +20,7 @@ mongoose.connect('mongodb://localhost:27017/moviesdb', {
   useNewUrlParser: true,
 });
 
+app.use(requestLogger);
 app.post('/signup', createUser);
 app.post('/signin', login);
 app.get('/signout', logout);
@@ -28,6 +30,7 @@ app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/movies'));
 
+app.use(errorLogger);
 app.use(handleError);
 
 app.listen(PORT, () => {
