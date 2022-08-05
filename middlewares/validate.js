@@ -1,5 +1,4 @@
 const { celebrate, Joi } = require('celebrate');
-const validator = require('validator');
 
 const loginValidation = celebrate({
   body: Joi.object().keys({
