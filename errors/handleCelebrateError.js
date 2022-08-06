@@ -6,7 +6,7 @@ const handleCelebrateError = (err, req, res, next) => {
     const joiMessage = err.details.get('body').message;
     throw new BadRequestError(`Переданы неверные данные. ${joiMessage}`);
   }
-  next();
+  next(err);
 };
 
 module.exports = { handleCelebrateError };

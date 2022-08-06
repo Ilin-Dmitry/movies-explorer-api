@@ -9,6 +9,7 @@ const { handleError } = require('./errors/handleError');
 const { handleCelebrateError } = require('./errors/handleCelebrateError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { loginValidation, createUserValidation } = require('./middlewares/validate');
+const NotFoundError = require('./errors/NotFoundError');
 
 const { PORT = 3000, MONGO_SERV, NODE_ENV } = process.env;
 
@@ -27,12 +28,19 @@ app.post('/signup', createUserValidation, createUser);
 app.post('/signin', loginValidation, login);
 app.get('/signout', logout);
 
-app.use(auth);
+// app.use(auth);
 
-app.use('/', require('./routes/users'));
-app.use('/', require('./routes/movies'));
+app.use('/', auth, require('./routes/users'));
+app.use('/', auth, require('./routes/movies'));
+
+app.use('*', (req, res, next) => {
+  Promise.reject(new NotFoundError('Такой страницы не существует'))
+    // .catch(res.send({message: 'ooopsss'}));
+    .catch(next);
+});
 
 app.use(errorLogger);
+
 app.use(handleCelebrateError);
 app.use(handleError);
 
