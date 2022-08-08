@@ -19,12 +19,18 @@ module.exports.showMe = (req, res, next) => {
 
 module.exports.refreshUser = (req, res, next) => {
   const { name, email } = req.body;
-  User.findByIdAndUpdate(req.user._id, { name, email }, {
-    new: true,
-    runValidators: true,
-  })
+  User.findOne({ email })
     .then((user) => {
-      res.send(user);
+      if (user && (user._id.toString() !== req.user._id)) {
+        throw new ConflictError('Пользователь с такой почтой уже зарегестрирован');
+      }
+      User.findByIdAndUpdate(req.user._id, { name, email }, {
+        new: true,
+        runValidators: true,
+      })
+        .then((refreshedUser) => {
+          res.send(refreshedUser);
+        });
     })
     .catch(next);
 };
