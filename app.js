@@ -26,16 +26,13 @@ mongoose.connect(NODE_ENV === 'production' ? MONGO_SERV : 'mongodb://localhost:2
 app.use(requestLogger);
 app.post('/signup', createUserValidation, createUser);
 app.post('/signin', loginValidation, login);
-app.get('/signout', logout);
 
-// app.use(auth);
-
+app.get('/signout', auth, logout);
 app.use('/', auth, require('./routes/users'));
 app.use('/', auth, require('./routes/movies'));
 
-app.use('*', (req, res, next) => {
+app.use('*', auth, (req, res, next) => {
   Promise.reject(new NotFoundError('Такой страницы не существует'))
-    // .catch(res.send({message: 'ooopsss'}));
     .catch(next);
 });
 
