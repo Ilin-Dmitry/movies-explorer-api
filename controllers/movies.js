@@ -45,6 +45,9 @@ module.exports.createMovie = (req, res) => {
 module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.id)
     .then((movie) => {
+      // console.log('movie.owner =>', movie.owner);
+      // console.log('movie.owner.toString() =>', movie.owner.toString());
+      console.log('movie =>', movie);
       if (!movie) {
         throw new NotFoundError('Такого фильма не найдено');
       } else if (movie.owner.toString() !== req.user._id) {

@@ -38,9 +38,16 @@ const createMovieValidation = celebrate({
   }),
 });
 
+const movieIdValidation = celebrate({
+  params: Joi.object().keys({
+    id: Joi.string().required().length(24).hex(),
+  }),
+});
+
 module.exports = {
   loginValidation,
   createUserValidation,
   refreshUserValidation,
   createMovieValidation,
+  movieIdValidation,
 };
