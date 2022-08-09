@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const router = require('./routes/index');
 const limiter = require('./middlewares/limiter');
 const { handleError } = require('./errors/handleError');
@@ -11,7 +12,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const { PORT = 3000, MONGO_SERV, NODE_ENV } = process.env;
 const app = express();
-
+app.use(helmet);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
