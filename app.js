@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const router = require('./routes/index');
+const limiter = require('./middlewares/limiter');
 const { handleError } = require('./errors/handleError');
 const { handleCelebrateError } = require('./errors/handleCelebrateError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
@@ -18,6 +19,7 @@ mongoose.connect(NODE_ENV === 'production' ? MONGO_SERV : 'mongodb://localhost:2
   useNewUrlParser: true,
 });
 app.use(requestLogger);
+app.use(limiter);
 app.use(router);
 app.use(errorLogger);
 app.use(handleCelebrateError);
