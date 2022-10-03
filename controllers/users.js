@@ -76,3 +76,10 @@ module.exports.logout = (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.checkCookieWithToken = (req, res) => {
+  if (!req.cookies.token) {
+    return res.send('false');
+  }
+  return res.send('true');
+};

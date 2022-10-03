@@ -9,9 +9,11 @@ const limiter = require('./middlewares/limiter');
 const { handleError } = require('./errors/handleError');
 const { handleCelebrateError } = require('./errors/handleCelebrateError');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const handleCors = require('./middlewares/handleCors');
 
-const { PORT = 3000, MONGO_SERV, NODE_ENV } = process.env;
+const { PORT = 3001, MONGO_SERV, NODE_ENV } = process.env;
 const app = express();
+app.use(handleCors);
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
